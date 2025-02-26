@@ -63,7 +63,6 @@ int main()
     {
         int a, b, c;
         cin >> a >> b >> c;
-
         Parents[a] = a;
         Parents[b] = b;
 
