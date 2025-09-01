@@ -1,43 +1,43 @@
 #include <iostream>
+#include <limits>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
 int main()
 {
-    int c, n;
-    cin >> c >> n;
-    vector<pair<int,int>> cities(n);
-    for (int i=0; i<n; i++)
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+
+    int C, N;
+    cin >> C >> N;
+
+    vector<pair<int, int>> cities;
+    cities.resize(N);
+    for (int i = 0; i < N; ++i)
     {
-        int cost, effect;
-        cin >> cost >> effect;
-        cities[i] = { cost, effect };
+        cin >> cities[i].first >> cities[i].second;
     }
 
-    sort(cities.begin(), cities.end(), [](const pair<int, int>& a, const pair<int, int>& b) -> bool {
-        double a_ratio = a.second/((double)a.first);
-        double b_ratio = b.second/((double)b.first);
-
-        if (a_ratio == b_ratio)
+    vector<int> dp;
+    dp.resize(C+1, numeric_limits<int>::max());
+    dp[0] = 0;
+    for (int city = 0; city < N; ++city)
+    {
+        for (int customerCount = 1; customerCount <= C; ++customerCount)
         {
-            if (a.first == b.first)
-            {
-                return a.second > b.second;
-            }
-            else
-                return a.first > b.first;
-        }
-        else
-            return a_ratio > b_ratio;
-    });
+            const auto [currentCost, currentEffect] = cities[city];
+            dp[customerCount] = min(dp[customerCount], currentCost * ((customerCount-1) / currentEffect + 1));
 
-    int total_cost = 0;
-    int total_effect = 0;
-    int last_added_city = 0;
-    while (total_effect < c)
-    {
-        last_added_city = 0;
+            if (customerCount >= currentEffect)
+            {
+                dp[customerCount] = min(dp[customerCount], dp[customerCount - currentEffect] + currentCost);
+            }
+        }
     }
+
+    cout << dp[C] << endl;
+    
+    return 0;
 }
