@@ -1,34 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 
 using namespace std;
 
-const char* Mbtis[] = { "ISTJ", "ISFJ", "INFJ", "INTJ", "ISTP", "ISFP", "INFP", "INTP", "ESTP", "ESFP", "ENFP", "ENTP", "ESTJ", "ESFJ", "ENFJ", "ENTJ" };
-
-int Cmp(const string& a, const string& b)
-{
-    int diff = 0;
-    for (int i = 0; i < 4; ++i)
-    {
-        if (a[i] != b[i])
-        {
-            ++diff;
-        }
-    }
-    return diff;
-}
-
-int Parse(const string& mbti)
-{
-    for (int i = 0; i < 16; ++i)
-    {
-        if (Cmp(mbti, Mbtis[i]) == 0)
-        {
-            return i;
-        }
-    }
-}
+char students[100001][5];
 
 int main()
 {
@@ -36,51 +10,45 @@ int main()
     cin.tie(nullptr);
     cout.tie(nullptr);
 
-    vector<pair<int, string>> dist[16];
-    for (int i = 0; i < 16; ++i)
-    {
-        dist[i].reserve(100'000);
-    }
     int T;
     cin >> T;
     for (int t = 0; t < T; ++t)
     {
-        for (int i = 0; i < 16; ++i)
-        {
-            dist[i].clear();
-        }
-
         int N;
         cin >> N;
+
         for (int i = 0; i < N; ++i)
         {
-            string student;
-            cin >> student;
-
-            for (int j = 0; j < 16; ++j)
-            {
-                dist[j].emplace_back(Cmp(Mbtis[j], student), student);
-            }
+            cin >> students[i];
         }
 
-        for (int i = 0; i < 16; ++i)
+        if (N > 32)
         {
-            sort(dist[i].begin(), dist[i].end());
+            cout << 0 << "\n";
+            continue;
         }
 
         int minimum = 13;
-        for (int i = 0; i < 16; ++i)
+        for (int i = 0; i < N; ++i)
         {
-            const auto& [cntA, mbtiA] = dist[i][0];
-            const auto& [cntB, mbtiB] = dist[i][1];
-            const auto& [cntC, mbtiC] = dist[i][2];
-
-            if (cntA > 0)
+            for (int j = 0; j < N; ++j)
             {
-                continue;
+                for (int k = 0; k < N; ++k)
+                {
+                    if (i == j || j == k || k == i)
+                    {
+                        continue;
+                    }
+                    int dist = 0;
+                    for (int l = 0; l < 5; ++l)
+                    {
+                        dist += (students[i][l] != students[j][l]);
+                        dist += (students[j][l] != students[k][l]);
+                        dist += (students[k][l] != students[i][l]);
+                    }
+                    minimum = min(minimum, dist);
+                }
             }
-
-            minimum = min(minimum, cntB + cntC + Cmp(mbtiB, mbtiC));
         }
         cout << minimum << "\n";
     }
